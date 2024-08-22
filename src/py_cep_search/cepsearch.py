@@ -29,3 +29,92 @@ class CepSearch:
         result = ResponseCep(rua, bairro, cidade, cep, uf)
 
         return result.__dict__
+    
+
+    def get_cep_by_address(self, address) -> list:
+        if not address.strip():
+            raise ValueError("address is empty")
+        
+        form_data = { "relaxation": address, "tipoCEP": "ALL", "semelhante": "N" }
+
+        data = requests.post(self.url_cep, data=form_data)
+        hasNextPage = False
+        list_addresses = []
+
+        soup_cep = BeautifulSoup(data.text, features="html.parser")
+        
+        link = soup_cep.find_all("a")
+
+        for x in link:
+            for y in x.contents:
+                if y == "[ Próxima ]":
+                    hasNextPage = True
+
+        nodes = soup_cep.find_all("td")
+        #TODO - Check
+        ctrl_content = soup_cep.find("div", class_="ctrlcontent")
+        divs = ctrl_content.find_all("div", style="float:left")
+        text_pages = divs[2].next_sibling
+        #print(text_pages.strip())
+
+        for idx, i in enumerate(nodes):
+            if idx % 4 == 0:
+                rua = nodes[idx + 0].get_text().strip()
+                bairro = nodes[idx + 1].get_text().strip()
+                data_splitted = nodes[idx + 2].get_text().split("/")
+                cidade = data_splitted[0].strip()
+                uf = data_splitted[1].strip()
+                cep = nodes[idx + 3].get_text().strip()
+                resp_cep = ResponseCep(rua, bairro, cidade, cep, uf)
+                list_addresses.append(resp_cep)
+
+        if hasNextPage:
+            self.acessa_proximas_paginas(self, list_addresses, address)
+
+        return list_addresses
+    
+    
+    def acessa_proximas_paginas(self, list_addresses, address):
+        
+        hasNextPage = False
+        pag_ini = 51
+        pag_fim = 100
+
+        form_data = { "relaxation": address,
+                     "exata":"5",
+                      "tipoCEP": "ALL", 
+                      "semelhante": "N",
+                      "qtdrow": "50",
+                      "pagIni": pag_ini.str(),
+                      "pagFim": pag_fim.str()
+                        }
+
+        data = requests.post(self.url_cep, data=form_data)
+        soup_cep = BeautifulSoup(data.text, features="html.parser")
+        
+        link = soup_cep.find_all("a")
+
+        if not hasNextPage:
+            for x in link:
+                for y in x.contents:
+                    if y == "[ Próxima ]":
+                        hasNextPage = True
+                        pag_ini += 25
+                        pag_fim += 25
+
+        
+        nodes = soup_cep.find_all("td")
+
+        for idx, i in enumerate(nodes):
+            if idx % 4 == 0:
+                rua = nodes[idx + 0].get_text().strip()
+                bairro = nodes[idx + 1].get_text().strip()
+                data_splitted = nodes[idx + 2].get_text().split("/")
+                cidade = data_splitted[0].strip()
+                uf = data_splitted[1].strip()
+                cep = nodes[idx + 3].get_text().strip()
+                resp_cep = ResponseCep(rua, bairro, cidade, cep, uf)
+                list_addresses.append(resp_cep)
+
+        if hasNextPage:
+            self.acessa_proximas_paginas(self, list_addresses, address)
