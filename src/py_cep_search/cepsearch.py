@@ -51,11 +51,6 @@ class CepSearch:
                     hasNextPage = True
 
         nodes = soup_cep.find_all("td")
-        #TODO - Check
-        ctrl_content = soup_cep.find("div", class_="ctrlcontent")
-        divs = ctrl_content.find_all("div", style="float:left")
-        text_pages = divs[2].next_sibling
-        #print(text_pages.strip())
 
         for idx, i in enumerate(nodes):
             if idx % 4 == 0:
@@ -69,24 +64,22 @@ class CepSearch:
                 list_addresses.append(resp_cep)
 
         if hasNextPage:
-            self.acessa_proximas_paginas(self, list_addresses, address)
+            self.access_next_pages(list_addresses, address)
 
         return list_addresses
     
     
-    def acessa_proximas_paginas(self, list_addresses, address):
+    def access_next_pages(self, list_addresses, address, pag_ini = 51, pag_fim = 100):
         
         hasNextPage = False
-        pag_ini = 51
-        pag_fim = 100
 
         form_data = { "relaxation": address,
                      "exata":"5",
                       "tipoCEP": "ALL", 
                       "semelhante": "N",
                       "qtdrow": "50",
-                      "pagIni": pag_ini.str(),
-                      "pagFim": pag_fim.str()
+                      "pagIni": str(pag_ini),
+                      "pagFim": str(pag_fim)
                         }
 
         data = requests.post(self.url_cep, data=form_data)
@@ -117,4 +110,4 @@ class CepSearch:
                 list_addresses.append(resp_cep)
 
         if hasNextPage:
-            self.acessa_proximas_paginas(self, list_addresses, address)
+            self.access_next_pages(list_addresses, address, pag_ini, pag_fim)
