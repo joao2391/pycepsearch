@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-from py_cep_search.response_correios import ResponseCep
+from .response_correios import ResponseCep
 
 class CepSearch:
 
@@ -64,12 +64,12 @@ class CepSearch:
                 list_addresses.append(resp_cep)
 
         if hasNextPage:
-            self.access_next_pages(list_addresses, address)
+            self.__access_next_pages(list_addresses, address)
 
         return list_addresses
     
     
-    def access_next_pages(self, list_addresses, address, pag_ini = 51, pag_fim = 100):
+    def __access_next_pages(self, list_addresses, address, pag_ini = 51, pag_fim = 100):
         
         hasNextPage = False
 
@@ -110,4 +110,4 @@ class CepSearch:
                 list_addresses.append(resp_cep)
 
         if hasNextPage:
-            self.access_next_pages(list_addresses, address, pag_ini, pag_fim)
+            self.__access_next_pages(list_addresses, address, pag_ini, pag_fim)
