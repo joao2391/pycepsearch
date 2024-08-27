@@ -35,6 +35,11 @@ class CepSearchTests(unittest.TestCase):
         self.assertIsNotNone(address)
         self.assertEqual(address["rua"], "Rua Frei Caneca")
 
+
+    def test_get_address_by_cep_error(self):
+        obj = cepsearch.CepSearch()
+        self.assertRaises(ValueError, obj.get_address_by_cep, "")
+
     
     @patch('requests.post')
     def test_get_cep_by_address(self, mock_requests):
@@ -50,6 +55,11 @@ class CepSearchTests(unittest.TestCase):
         ceps = obj.get_cep_by_address("Rua Frei Caneca")
         self.assertIsNotNone(ceps)
         self.assertEqual(50, len(ceps))
+
+    
+    def test_get_cep_by_address_error(self):
+        obj = cepsearch.CepSearch()
+        self.assertRaises(ValueError, obj.get_cep_by_address, "")
 
     
 
