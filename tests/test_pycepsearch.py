@@ -6,14 +6,12 @@ from pathlib import Path
 class CepSearchTests(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.url_address = "https://www2.correios.com.br/sistemas/buscacep/resultadoBuscaEndereco.cfm"
-        self.url_cep = "https://www2.correios.com.br/sistemas/buscacep/resultadoBuscaCepEndereco.cfm"
 
         relative_path = 'mock_data_address.html'
         dir = Path(__file__).parent
         absolute_path = dir.joinpath(relative_path)
         with open(absolute_path, "r") as file:
-            self.html_adress = file.read()
+            self.html_address = file.read()
 
         relative_path = 'mock_data_cep.html'
         dir = Path(__file__).parent
@@ -27,8 +25,8 @@ class CepSearchTests(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.status = 200
 
-        mock_response.read.return_value = self.html_adress
-        mock_response.text = self.html_adress
+        mock_response.read.return_value = self.html_cep
+        mock_response.text = self.html_cep
 
         mock_requests.return_value = mock_response
 
@@ -36,6 +34,22 @@ class CepSearchTests(unittest.TestCase):
         address = obj.get_address_by_cep("69918-120")
         self.assertIsNotNone(address)
         self.assertEqual(address["rua"], "Rua Frei Caneca")
+
+    
+    @patch('requests.post')
+    def test_get_cep_by_address(self, mock_requests):
+        mock_response = MagicMock()
+        mock_response.status = 200
+
+        mock_response.read.return_value = self.html_address
+        mock_response.text = self.html_address
+
+        mock_requests.return_value = mock_response
+
+        obj = cepsearch.CepSearch()
+        ceps = obj.get_cep_by_address("Rua Frei Caneca")
+        self.assertIsNotNone(ceps)
+        self.assertEqual(50, len(ceps))
 
     
 
