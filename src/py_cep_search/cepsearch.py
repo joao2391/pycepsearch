@@ -10,6 +10,9 @@ class CepSearch:
 
 
     def get_address_by_cep(self, cep) -> dict:
+        """
+        It returns ResponseCep as dict (rua, bairro, cidade, cep, uf)
+        """
         if not cep.strip():
             raise ValueError("CEP is empty")
         
@@ -32,6 +35,10 @@ class CepSearch:
     
 
     def get_cep_by_address(self, address) -> list:
+        """
+        It returns a list of ResponseCep(rua, bairro, cidade, cep, uf)
+        """
+
         if not address.strip():
             raise ValueError("address is empty")
         

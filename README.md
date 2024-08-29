@@ -1,34 +1,37 @@
-# PyCEPSearch ![PyPI](https://img.shields.io/pypi/dd/PyCEPSearch)
+# PyCEPSearch ![PyPI](https://img.shields.io/pypi/dm/PyCEPSearch)
 
 This package helps you to get a CEP or Address from brazilian's postal service.
 
 ## Notes
 Version 0.0.1:
 
-- TODO
+- Get CEP by address
+- Get address by CEP
 
 ## Installation
 
 Use the package manager to install.
 
 ```bash
-TODO
+pip install PyCepSearch
 ```
 
 ## Usage
 
 After install:
 ```python
-TODO
+from py_cep_search import cepsearch
+
+search = cepsearch.CepSearch()
 ```
 Get Addres by CEP
 ```python
-TODO
+address = search.get_address_by_cep("") #it returns a dict
 ```
 
 Get CEP by Address
 ```python
-TODO
+cep = search.get_cep_by_address("") #it returns a list
 ```
 
 ## Contributing
